@@ -57,6 +57,32 @@ class Settings:
                 print("convert relative path to absolute path, load", path)
             return pyrenderer.Volume(path)
 
+    def load_random_sample_from_dataset(self, resolution : Optional[int] = None) -> pyrenderer.Volume:
+        """
+        Loads a random sample from the dataset directory specified in the settings file
+        :param resolution: if it is a synthetic dataset, use this resolution
+          instead of the one specified in the settings
+        :return: the volume, still only on the CPU
+        """
+        directory = self._data["dataset"]["directory"].replace("\\", "/")
+        if not os.path.isabs(directory):
+            directory = os.path.abspath(os.path.join(self._filepath, directory))
+            print("convert relative path to absolute path, load", directory)
+
+        recursive_walk = os.walk(directory)
+        
+        # take only files ending in .npy
+        files = [os.path.join(root, file) for root, _, files in recursive_walk for file in files if file.endswith(".npy")]
+
+        print(f"Found {len(files)} files in {directory}")
+        
+        if len(files) == 0:
+            raise Exception("No .npy files found in "+directory)
+        file = np.random.choice(files)
+        npy = np.load(file).astype(np.float32)
+
+        return pyrenderer.Volume.from_numpy(npy)
+
     class CameraConfig(NamedTuple):
         pitch_radians : float
         yaw_radians : float
