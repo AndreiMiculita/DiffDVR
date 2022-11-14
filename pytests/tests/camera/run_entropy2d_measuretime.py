@@ -725,4 +725,4 @@ if __name__ == '__main__':
             duration = time.time() - start_time
             times[category].append(duration)
         print(f"Times for category {category}", times[category])
-        print("Average time for category {category}: %.2f"%(np.mean(times)))
+        print(f"Average time for category {category}: %.2f"%(np.mean(times)))
