@@ -14,7 +14,7 @@
         "zoomValue": 4.0
     },
     "dataset": {
-        "directory": "..\\volumes\\voxel_data\\sofa",
+        "directory": "..\\..\\volumes\\voxel_data\\sofa",
         "mipmap": 0,
         "syntheticDataset": -1,
         "syntheticDatasetResolutionPower": 6

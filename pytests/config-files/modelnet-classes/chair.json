@@ -14,7 +14,7 @@
         "zoomValue": 4.0
     },
     "dataset": {
-        "directory": "..\\volumes\\voxel_data\\chair",
+        "directory": "..\\..\\volumes\\voxel_data\\chair",
         "mipmap": 0,
         "syntheticDataset": -1,
         "syntheticDatasetResolutionPower": 6
