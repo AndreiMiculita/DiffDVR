@@ -717,12 +717,20 @@ if __name__ == '__main__':
     n_iterations = 10
     times = {}
 
+    last_string = ""
+
     for category in categories:
         times[category] = [];
         for i in range(n_iterations):
             start_time = time.time()
-            run(f"./config-files/{category}.json", category, "export", True, hemisphere="light")
+            run(f"./config-files/modelnet-classes/{category}.json", category, "export", True, hemisphere="light")
             duration = time.time() - start_time
             times[category].append(duration)
-        print(f"Times for category {category}", times[category])
-        print(f"Average time for category {category}: %.2f"%(np.mean(times)))
+        towrite = f"Times for category {category} {times[category]}"
+        print(towrite)
+        last_string += towrite + "\n"
+        towrite = f"Average time for category {category}: {np.mean(times[category])}"
+        print(towrite)
+        last_string += towrite + "\n"
+
+    print(last_string)
