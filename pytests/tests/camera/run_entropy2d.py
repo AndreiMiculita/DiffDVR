@@ -1,4 +1,5 @@
 import numpy as np
+import time
 import torch
 import os
 import matplotlib.pyplot as plt
@@ -8,6 +9,7 @@ import matplotlib
 import matplotlib.colors
 import tqdm
 import imageio
+import sys; sys.path.append('/opt/DiffDVR/bin'); sys.path.append('/opt/DiffDVR/bin/pytests')
 
 from diffdvr import Renderer, CameraOnASphere, Entropy, ColorMatches, Settings, setup_default_settings, \
     fibonacci_sphere, renderer_dtype_torch, renderer_dtype_np, ProfileRenderer, cvector_to_numpy
@@ -36,7 +38,10 @@ def compute(settings_file, name, include_color_in_entropy=False, save=True, para
 
     # settings
     s = Settings(settings_file)
-    volume = s.load_dataset()
+    # volume = s.load_dataset()
+    chair_npy = np.load("tests/camera/chair.npy").astype(np.float32)
+    print(chair_npy.shape)
+    volume = pyrenderer.Volume.from_numpy(chair_npy)
     volume.copy_to_gpu()
     volume_data = volume.getDataGpu(0) if CommonVariables.run_on_cuda else volume.getDataCpu(0)
     device = volume_data.device
@@ -308,6 +313,7 @@ def compute(settings_file, name, include_color_in_entropy=False, save=True, para
 
         loss_per_iteration = np.stack(loss_per_iteration)
         print("Done")
+        np.set_printoptions(edgeitems=30, linewidth=100000, formatter=dict(float=lambda x: "%.3g" % x))
         print("Losses:", loss_per_iteration)
         final_images_cpu = renderer['forward-immediate'](
             camera=camera_module(current_camera_center, current_camera_yaw,
@@ -705,12 +711,18 @@ def visualize(name, show_or_export: str, data=None, hemisphere="full"):
     export_sampled()
 
 def run(settings_file, name, show_or_export, include_color_in_entropy, params=None, hemisphere="full"):
-    data = compute(settings_file, name, include_color_in_entropy, save=False, params=params)
+    data = compute(settings_file, name, include_color_in_entropy, save=True, params=params)
     visualize(name, show_or_export, data, hemisphere=hemisphere)
 
 
 if __name__ == '__main__':
-    run("../../config-files/tooth1.json", "Tooth-WColor", "export", True, hemisphere="light")
-    run("../../config-files/single_jet.json", "Jet", "export", False, {'lr':10, 'iterations':20, 'intermediate':10}, hemisphere="small")
-    run("../../config-files/c60multi-pw.json", "C60multi", "export", False, hemisphere="small")
-    run("../../config-files/plume100-linear.json", "plume100", "export", False, {'lr':10.0, 'iterations':20, 'intermediate':200}, hemisphere="small")
+    start_time = time.time()
+    run("./config-files/tooth1.json", "Tooth-WColor", "export", True, hemisphere="light")
+    second_time = (time.time() - start_time); start_time = time.time()
+    run("./config-files/single_jet.json", "Jet", "export", False, {'lr':10, 'iterations':20, 'intermediate':10}, hemisphere="small")
+    third_time  = (time.time() - start_time); start_time = time.time()
+    run("./config-files/c60multi-pw.json", "C60multi", "export", False, hemisphere="small")
+    fourth_time = (time.time() - start_time); start_time = time.time()
+    run("./config-files/plume100-linear.json", "plume100", "export", False, {'lr':10.0, 'iterations':20, 'intermediate':200}, hemisphere="small")
+    fifth_time = (time.time() - start_time)
+    print(f"times {second_time}, {third_time}, {fourth_time}, {fifth_time}")
