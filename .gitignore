@@ -3,3 +3,5 @@ build/
 *.pyc
 /pytests/results/*
 !/pytests/results/__init__.py
+pytests/volumes/voxel_data/*
+pytests/kernel_cache/*
