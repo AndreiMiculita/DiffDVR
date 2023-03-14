@@ -39,7 +39,7 @@ def compute(settings_file, name, include_color_in_entropy=False, save=True, para
     # settings
     s = Settings(settings_file)
     # volume = s.load_dataset()
-    chair_npy = np.load("tests/camera/chair.npy").astype(np.float32)
+    chair_npy = np.load("volumes/voxel_data/chair/train/chair_0001.npy").astype(np.float32)
     print(chair_npy.shape)
     volume = pyrenderer.Volume.from_numpy(chair_npy)
     volume.copy_to_gpu()
